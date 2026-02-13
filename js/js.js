@@ -10,6 +10,94 @@
    A / Space / Enter / Mouse click = Master toggle (all ON/OFF)
    ========================= */
 
+/* =========================
+   CONFIG (move all tunables here)
+   - Adjust frequencies, ranges, intensities in one place.
+   - All times are in milliseconds unless noted.
+   ========================= */
+
+// ---- Color profiles ----
+const PROFILES = ["gray", "red", "green", "blue"];
+
+// ---- Initial ON/OFF state ----
+const DEFAULT_STATE = {
+  master: true,        // Master ON/OFF (A/Space/Enter/Click)
+  glitch: true,        // 1
+  statik: true,        // 2
+  scan: true,          // 3 (scanlines + moving row overlay)
+  chfx: true,          // 4 (hot/dim waves)
+  float: true,         // 5 (floating blocks)
+  profileIndex: 0      // +/- cycles [gray, red, green, blue]
+};
+
+// ---- Character waves (hot/dim) ----
+// Line band selection + per-line highlight parameters.
+const WAVE_TUNABLES = {
+  leftHot: {
+    bandMinLines: 4, bandMaxLines: 10,
+    perLineMin: 6,  perLineMax: 16,
+    holdMin: 520,   holdMax: 1250,
+    radiusMin: 10,  radiusMax: 28
+  },
+  rightHot: {
+    bandMinLines: 3, bandMaxLines: 9,
+    perLineMin: 5,  perLineMax: 14,
+    holdMin: 600,   holdMax: 1450,
+    radiusMin: 12,  radiusMax: 32
+  },
+  leftDim: {
+    bandMinLines: 5, bandMaxLines: 12,
+    perLineMin: 8,  perLineMax: 22,
+    holdMin: 800,   holdMax: 2200,
+    radiusMin: 14,  radiusMax: 40
+  },
+  rightDim: {
+    bandMinLines: 4, bandMaxLines: 11,
+    perLineMin: 7,  perLineMax: 20,
+    holdMin: 900,   holdMax: 2400,
+    radiusMin: 16,  radiusMax: 44
+  }
+};
+
+// How often new waves are emitted (min/max interval between ticks).
+const WAVE_SCHEDULE = {
+  leftHot:  { intervalMin: 420, intervalMax: 920  },
+  rightHot: { intervalMin: 520, intervalMax: 1200 },
+  leftDim:  { intervalMin: 650, intervalMax: 1500 },
+  rightDim: { intervalMin: 780, intervalMax: 1800 }
+};
+
+// ---- Static overlay flicker ----
+const STATIC_TUNABLES = {
+  opacity: 0.05,            // Baseline static opacity while enabled
+  nextTickMin: 6000,        // How often we consider flicker events
+  nextTickMax: 18000,
+  flickerChance: 0.22,      // Probability to briefly drop static to 0
+  offForMin: 70,            // How long static stays off during a flicker
+  offForMax: 120
+};
+
+// ---- Scanline "Sync-Loss" row shift + 1–2 frame freeze ----
+const SCAN_TUNABLES = {
+  nextTickMin: 900,         // Time between scan FX "ticks"
+  nextTickMax: 2600,
+  initialDelayMin: 1200,    // First tick delay (prevents immediate effect)
+  initialDelayMax: 3200,
+  freezeChance: 0.08,       // Probability to freeze the container for 1–2 frames
+  shiftChance: 0.35,        // Probability to shift random lines on a tick
+  shiftLineCountMin: 1,     // Number of lines shifted per event
+  shiftLineCountMax: 5,
+  shiftDurationMin: 50,     // How long shifted lines stay shifted
+  shiftDurationMax: 110,
+  shiftMaxPxMin: 10,        // Max horizontal shift range (randomized per event)
+  shiftMaxPxMax: 28,
+  shiftMinPx: 3             // Minimum horizontal shift magnitude
+};
+
+// =========================
+// Core
+// =========================
+
 function wrapLinesAndChars(pre) {
   const text = pre.textContent.replace(/\r\n/g, "\n");
   pre.textContent = "";
@@ -170,37 +258,22 @@ function scheduleWaves(fn, lines, opts, intervalMin, intervalMax) {
   };
 }
 
-// Tunables
-const leftHot = {
-  bandMinLines: 4, bandMaxLines: 10,
-  perLineMin: 6,  perLineMax: 16,
-  holdMin: 520,   holdMax: 1250,
-  radiusMin: 10,  radiusMax: 28
-};
-const rightHot = {
-  bandMinLines: 3, bandMaxLines: 9,
-  perLineMin: 5,  perLineMax: 14,
-  holdMin: 600,   holdMax: 1450,
-  radiusMin: 12,  radiusMax: 32
-};
-
-const leftDim = {
-  bandMinLines: 5, bandMaxLines: 12,
-  perLineMin: 8,  perLineMax: 22,
-  holdMin: 800,   holdMax: 2200,
-  radiusMin: 14,  radiusMax: 40
-};
-const rightDim = {
-  bandMinLines: 4, bandMaxLines: 11,
-  perLineMin: 7,  perLineMax: 20,
-  holdMin: 900,   holdMax: 2400,
-  radiusMin: 16,  radiusMax: 44
-};
-
-const schedLeftHot  = scheduleWaves(sparkWave, leftLines,  leftHot,  420,  920);
-const schedRightHot = scheduleWaves(sparkWave, rightLines, rightHot, 520, 1200);
-const schedLeftDim  = scheduleWaves(dimWave,   leftLines,  leftDim,  650, 1500);
-const schedRightDim = scheduleWaves(dimWave,   rightLines, rightDim, 780, 1800);
+const schedLeftHot  = scheduleWaves(
+  sparkWave, leftLines,  WAVE_TUNABLES.leftHot,
+  WAVE_SCHEDULE.leftHot.intervalMin,  WAVE_SCHEDULE.leftHot.intervalMax
+);
+const schedRightHot = scheduleWaves(
+  sparkWave, rightLines, WAVE_TUNABLES.rightHot,
+  WAVE_SCHEDULE.rightHot.intervalMin, WAVE_SCHEDULE.rightHot.intervalMax
+);
+const schedLeftDim  = scheduleWaves(
+  dimWave,   leftLines,  WAVE_TUNABLES.leftDim,
+  WAVE_SCHEDULE.leftDim.intervalMin,  WAVE_SCHEDULE.leftDim.intervalMax
+);
+const schedRightDim = scheduleWaves(
+  dimWave,   rightLines, WAVE_TUNABLES.rightDim,
+  WAVE_SCHEDULE.rightDim.intervalMin, WAVE_SCHEDULE.rightDim.intervalMax
+);
 
 // =========================
 // DOM refs
@@ -215,16 +288,14 @@ const staticOverlay = document.getElementById("staticOverlay");
 // =========================
 
 const state = {
-  master: true,       // master ON/OFF (A/Space/Enter/Click)
-  glitch: true,       // 1
-  statik: true,       // 2
-  scan: true,         // 3 (scanlines + moving row overlay)
-  chfx: true,         // 4 (hot/dim waves)
-  lineOsc: true,      // 5 (line-height oscillation)
-  profileIndex: 0     // +/- cycles [gray, red, green, blue]
+  master: DEFAULT_STATE.master,
+  glitch: DEFAULT_STATE.glitch,
+  statik: DEFAULT_STATE.statik,
+  scan: DEFAULT_STATE.scan,
+  chfx: DEFAULT_STATE.chfx,
+  float: DEFAULT_STATE.float,
+  profileIndex: DEFAULT_STATE.profileIndex
 };
-
-const PROFILES = ["gray", "red", "green", "blue"];
 
 // =========================
 // Helpers
@@ -246,7 +317,7 @@ function applyColorProfile() {
 // Static flicker (only while static is ON and master is ON)
 // =========================
 
-const STATIC_OPACITY = 0.05;
+const STATIC_OPACITY = STATIC_TUNABLES.opacity;
 let staticFlickerTimer = null;
 
 function stopStaticFlicker() {
@@ -262,12 +333,12 @@ function startStaticFlicker() {
   function tick() {
     if (!state.master || !state.statik) return;
 
-    const nextIn = randBetween(6000, 18000);
+    const nextIn = randBetween(STATIC_TUNABLES.nextTickMin, STATIC_TUNABLES.nextTickMax);
     staticFlickerTimer = setTimeout(() => {
       if (!state.master || !state.statik) return;
 
-      if (Math.random() < 0.22) {
-        const offFor = randBetween(70, 120);
+      if (Math.random() < STATIC_TUNABLES.flickerChance) {
+        const offFor = randBetween(STATIC_TUNABLES.offForMin, STATIC_TUNABLES.offForMax);
         staticOverlay.style.opacity = "0";
         setTimeout(() => {
           if (state.master && state.statik) staticOverlay.style.opacity = String(STATIC_OPACITY);
@@ -334,9 +405,11 @@ async function doFreezeFrames() {
 
 function shiftRandomLines() {
   // Choose how many lines to shift (rare + small)
-  const count = 1 + randInt(5); // 1..5 lines
-  const duration = randBetween(50, 110); // ms
-  const maxShift = randBetween(10, 28);  // px
+  const count = SCAN_TUNABLES.shiftLineCountMin
+    + randInt(SCAN_TUNABLES.shiftLineCountMax - SCAN_TUNABLES.shiftLineCountMin + 1);
+
+  const duration = randBetween(SCAN_TUNABLES.shiftDurationMin, SCAN_TUNABLES.shiftDurationMax);
+  const maxShift = randBetween(SCAN_TUNABLES.shiftMaxPxMin, SCAN_TUNABLES.shiftMaxPxMax);
 
   const all = [...leftLines, ...rightLines];
   const picked = [];
@@ -346,7 +419,7 @@ function shiftRandomLines() {
     if (!line || picked.includes(line)) continue;
     picked.push(line);
 
-    const dx = (Math.random() < 0.5 ? -1 : 1) * randBetween(3, maxShift);
+    const dx = (Math.random() < 0.5 ? -1 : 1) * randBetween(SCAN_TUNABLES.shiftMinPx, maxShift);
     line.style.transform = `translate3d(${dx}px, 0, 0)`;
     line.style.filter = "blur(0.2px)";
     line.style.opacity = "0.98";
@@ -372,22 +445,25 @@ function startScanFX() {
     const r = Math.random();
 
     // Very rare freeze (1–2 frames)
-    if (r < 0.08) {
+    if (r < SCAN_TUNABLES.freezeChance) {
       doFreezeFrames().catch(() => {});
     }
 
     // Rare line shifts (sync-loss)
-    if (r < 0.35) {
+    if (r < SCAN_TUNABLES.shiftChance) {
       shiftRandomLines();
     }
 
     // Schedule next tick (rare)
-    const nextIn = randBetween(900, 2600);
+    const nextIn = randBetween(SCAN_TUNABLES.nextTickMin, SCAN_TUNABLES.nextTickMax);
     scanFxTimer = setTimeout(tick, nextIn);
   }
 
   // Initial delay to avoid immediate effect
-  scanFxTimer = setTimeout(tick, randBetween(1200, 3200));
+  scanFxTimer = setTimeout(
+    tick,
+    randBetween(SCAN_TUNABLES.initialDelayMin, SCAN_TUNABLES.initialDelayMax)
+  );
 }
 
 // =========================
@@ -398,7 +474,7 @@ function applyAll() {
   // Scanlines overlay (CSS uses body.scan-on)
   document.body.classList.toggle("scan-on", state.master && state.scan);
 
-  // Float animation (kept tied to master like before; you can also make it its own toggle)
+  // Float animation (CSS uses .float-on on container)
   container.classList.toggle("float-on", state.master && state.float);
 
   // Character FX class gate (CSS uses body.chfx-off)
@@ -409,8 +485,7 @@ function applyAll() {
   staticOverlay.style.display = (state.master && state.statik) ? "block" : "none";
 
   // Keep static opacity in a sane state
-  if (state.master && state.statik) staticOverlay.style.opacity = String(STATIC_OPACITY);
-  else staticOverlay.style.opacity = String(STATIC_OPACITY);
+  staticOverlay.style.opacity = String(STATIC_OPACITY);
 
   // Start/stop character waves
   if (state.master && state.chfx) {
@@ -448,7 +523,7 @@ function toggleGlitch() { state.glitch = !state.glitch; applyAll(); }
 function toggleStatic() { state.statik = !state.statik; applyAll(); }
 function toggleScan()   { state.scan = !state.scan;     applyAll(); }
 function toggleChFX()   { state.chfx = !state.chfx;     applyAll(); }
-function toggleFloat(){ state.float = !state.float; applyAll(); }
+function toggleFloat()  { state.float = !state.float;   applyAll(); }
 
 function cycleProfile(dir) {
   const n = PROFILES.length;
@@ -477,13 +552,13 @@ document.addEventListener("keydown", (e) => {
     return;
   }
 
-  // Numeric feature toggles (only act on keypress, not numpad quirks)
+  // Numeric feature toggles
   if (k === "1") { toggleGlitch(); return; }
   if (k === "2") { toggleStatic(); return; }
   if (k === "3") { toggleScan();   return; }
   if (k === "4") { toggleChFX();   return; }
-  if (k === "5") { toggleFloat(); return; }
-  
+  if (k === "5") { toggleFloat();  return; }
+
   // Profile cycle
   if (k === "+" || e.key === "=") { cycleProfile(+1); return; }
   if (k === "-" || e.key === "_") { cycleProfile(-1); return; }
@@ -502,14 +577,5 @@ document.addEventListener("dragstart", (e) => e.preventDefault());
 // Init (default ACTIVE)
 // =========================
 
-// Ensure a deterministic startup state
-state.master = true;
-state.glitch = true;
-state.statik = true;
-state.scan = true;
-state.chfx = true;
-state.lineOsc = true;
-state.float = true;
-state.profileIndex = 0;
-
+// Apply deterministic startup state from DEFAULT_STATE
 applyAll();
