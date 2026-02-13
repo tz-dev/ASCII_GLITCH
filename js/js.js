@@ -5,7 +5,7 @@
    2 = Static overlay on/off
    3 = Scanlines + moving row FX on/off
    4 = Character hot/dim waves on/off
-   5 = Line-height oscillation on/off
+   5 = Floating blocks on/off
    +/- = Cycle text color profiles (gray -> red -> green -> blue)
    A / Space / Enter / Mouse click = Master toggle (all ON/OFF)
    ========================= */
@@ -216,13 +216,11 @@ const staticOverlay = document.getElementById("staticOverlay");
 
 const state = {
   master: true,       // master ON/OFF (A/Space/Enter/Click)
-
   glitch: true,       // 1
   statik: true,       // 2
   scan: true,         // 3 (scanlines + moving row overlay)
   chfx: true,         // 4 (hot/dim waves)
   lineOsc: true,      // 5 (line-height oscillation)
-  float: true,        // 6 = pre blocks movement on/off
   profileIndex: 0     // +/- cycles [gray, red, green, blue]
 };
 
@@ -284,45 +282,6 @@ function startStaticFlicker() {
 
   staticOverlay.style.opacity = String(STATIC_OPACITY);
   tick();
-}
-
-// =========================
-// Line-height oscillation (smooth via rAF)
-// =========================
-
-const LINE_BASE = 0.575;
-const LINE_AMP  = 0.020;     // amplitude (feel free to tweak)
-const LINE_SPEED = 0.00125;  // speed (feel free to tweak)
-
-let lineOscRAF = 0;
-let lineOscT0 = 0;
-
-function stopLineOsc() {
-  if (lineOscRAF) cancelAnimationFrame(lineOscRAF);
-  lineOscRAF = 0;
-
-  leftPre.style.lineHeight = String(LINE_BASE);
-  rightPre.style.lineHeight = String(LINE_BASE);
-}
-
-function startLineOsc() {
-  stopLineOsc();
-  lineOscT0 = performance.now();
-
-  function frame(t) {
-    if (!state.master || !state.lineOsc) return;
-
-    const dt = t - lineOscT0;
-    const w = Math.sin(dt * LINE_SPEED);
-    const v = LINE_BASE + (w * LINE_AMP);
-
-    leftPre.style.lineHeight = String(v);
-    rightPre.style.lineHeight = String(v);
-
-    lineOscRAF = requestAnimationFrame(frame);
-  }
-
-  lineOscRAF = requestAnimationFrame(frame);
 }
 
 // =========================
@@ -493,7 +452,6 @@ function toggleGlitch() { state.glitch = !state.glitch; applyAll(); }
 function toggleStatic() { state.statik = !state.statik; applyAll(); }
 function toggleScan()   { state.scan = !state.scan;     applyAll(); }
 function toggleChFX()   { state.chfx = !state.chfx;     applyAll(); }
-function toggleLineOsc(){ state.lineOsc = !state.lineOsc; applyAll(); }
 function toggleFloat(){ state.float = !state.float; applyAll(); }
 
 function cycleProfile(dir) {
@@ -529,7 +487,6 @@ document.addEventListener("keydown", (e) => {
   if (k === "3") { toggleScan();   return; }
   if (k === "4") { toggleChFX();   return; }
   if (k === "5") { toggleFloat(); return; }
-  if (k === "6") { toggleLineOsc(); return; }
   
   // Profile cycle
   if (k === "+" || e.key === "=") { cycleProfile(+1); return; }
