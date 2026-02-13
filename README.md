@@ -1,4 +1,3 @@
-````md
 # ASCII_GLITCH
 
 A real-time ASCII terminal display that simulates unstable signal reception — glitch bursts, VHS noise, sync loss, flicker and frozen frames.
