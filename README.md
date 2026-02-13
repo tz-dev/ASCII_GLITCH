@@ -1,3 +1,4 @@
+````md
 # ASCII_GLITCH
 
 A real-time ASCII terminal display that simulates unstable signal reception — glitch bursts, VHS noise, sync loss, flicker and frozen frames.
@@ -32,12 +33,26 @@ Best results with monospaced ASCII.
 
 ## Controls
 
-| Input       | Action        |
-| ----------- | ------------- |
-| A           | Toggle signal |
-| Enter       | Toggle signal |
-| Space       | Toggle signal |
-| Mouse Click | Toggle signal |
+### Master
+
+### Toggle general FX on/off
+
+* ENTER
+* SPACE
+* A
+* LEFT CLICK
+
+### Individual Effects
+
+| Key   | Effect                                           |
+| ----- | ------------------------------------------------ |
+| 1     | Glitch overlay on/off                            |
+| 2     | Static noise on/off                              |
+| 3     | Scanlines + sync loss movement on/off            |
+| 4     | Character activity (bright/dim waves) on/off     |
+| 5     | Pre block floating movement on/off               |
+| 6     | Line height oscillation on/off                   |
+| + / - | Cycle color profiles (gray → red → green → blue) |
 
 ---
 
