@@ -6,6 +6,10 @@ Whatever you place inside the `<pre>` blocks becomes a “received signal”.
 
 ---
 
+[ASCII_GLITCH – Web Demo](https://tz-dev.github.io/ASCII_GLITCH/index.html)
+
+---
+
 ## Usage
 
 Open **index.html** and replace the ASCII inside:
