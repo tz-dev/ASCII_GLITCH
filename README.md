@@ -51,7 +51,6 @@ Best results with monospaced ASCII.
 | 3     | Scanlines + sync loss movement on/off            |
 | 4     | Character activity (bright/dim waves) on/off     |
 | 5     | Pre block floating movement on/off               |
-| 6     | Line height oscillation on/off                   |
 | + / - | Cycle color profiles (gray → red → green → blue) |
 
 ---
