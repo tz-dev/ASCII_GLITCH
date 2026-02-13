@@ -427,10 +427,6 @@ function applyAll() {
   if (state.master && state.statik) startStaticFlicker();
   else stopStaticFlicker();
 
-  // Start/stop line-height oscillation
-  if (state.master && state.lineOsc) startLineOsc();
-  else stopLineOsc();
-
   // Start/stop scan FX (sync-loss + freeze)
   if (state.master && state.scan) startScanFX();
   else stopScanFX();
