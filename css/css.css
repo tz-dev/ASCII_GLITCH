@@ -1,278 +1,347 @@
-			html, body {
-			  height: 100%;
-			  cursor: none;
-			}
+/* =========================
+   ASCII_GLITCH — Styles
+   - All comments in English
+   - Toggleable features via classes on <body> / <html>
+   ========================= */
 
-			body {
-			  padding: 10px;
-			  margin: 0;
-			  background: #000;
-			  color: #999;
-			  font-size: 0.85em;
-			  overflow: hidden;
+/* Base */
+html, body{
+  height: 100%;
+  cursor: none;
+}
 
-			  /* >>> neu */
-			  display: flex;
-			  justify-content: center;   /* horizontal */
-			  align-items: center;       /* vertikal */
-			}
-			/* ===== Overlay ===== */
-			#glitchOverlay {
-			    position: fixed;        /* bleibt immer im Viewport */
-			    top: 0;
-			    left: 0;
-			    width: 100vw;           /* ganze Breite */
-			    height: 100vh;          /* ganze Höhe */
-			    z-index: 9999;          /* ganz oben */
+/* Disable text selection everywhere */
+*{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 
-			    pointer-events: none;   /* Klicks gehen durch */
+body{
+  padding: 10px;
+  margin: 0;
+  background: #000;
+  color: #999;
+  font-size: 0.85em;
+  overflow: hidden;
 
-			    background-image: url("../gif/glitch.gif");
-			    background-size: 100% 100%;   /* STRETCH TO FIT */
-			    background-repeat: no-repeat;
-			    background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-			    opacity: 0.35;          /* Stärke einstellen */
-			    mix-blend-mode: screen; /* optional: schöner Effekt */
-			    display: none;
-			}
+/* =========================
+   Overlays (toggle via body classes)
+   ========================= */
 
-			/* Keine Textmarkierung irgendwo */
-			*{
-			  -webkit-user-select: none;
-			  -moz-user-select: none;
-			  user-select: none;
+/* Glitch overlay (GIF) */
+#glitchOverlay{
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
 
-			  -webkit-touch-callout: none; /* iOS long-press Menü */
-			}
+  background-image: url("../gif/glitch.gif");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
 
-			/* ===== STATIC OVERLAY (fullscreen, stretch, default OFF) ===== */
-			#staticOverlay{
-			  position: fixed;
-			  top: 0;
-			  left: 0;
-			  width: 100vw;           /* volle Breite */
-			  height: 100vh;          /* volle Höhe */
-			  z-index: 9997;          /* unter vhs (9998) und glitch (9999) */
-			  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: screen;
 
-			  background-image: url("../gif/static.gif");
-			  background-size: 100% 100%;   /* STRETCH TO FIT (wie glitchOverlay) */
-			  background-repeat: no-repeat; /* wichtig für stretch */
-			  background-position: center;
+  display: none; /* default OFF */
+}
+body.glitch-on #glitchOverlay{ display:block; }
 
-			  opacity: 0.1;           /* Ziel-Opacity wenn an */
-			  mix-blend-mode: screen; /* optional */
-			  display: none;          /* default OFF (wie glitchOverlay) */
-			}
+/* Static overlay (GIF) */
+#staticOverlay{
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9997;  /* below scanlines and glitch */
+  pointer-events: none;
 
-			/* dein bisheriger fixer Wrapper */
-			#container {
-			  width: 1520px;
-			  margin-top: -25px;
-			}
-			pre { margin: 0; white-space: pre-wrap; }
-			#left, #right {
-				display: block;
-				line-height: 0.575;
-				letter-spacing: 0.02em;
-			}
-			#left  { float: left; }
-			#right { float: right; }
-			/* einzelne Zeichen */
-			.ch {
-			  display: inline-block;
-			  color: #8f98a1;
-			  transition: color 1700ms linear, text-shadow 700ms linear, opacity 700ms linear;
-			  opacity: 0.95;
-			}
-			.ch.hot {
-			  color: #eaf6ff;
-			  text-shadow:
-			    0 0 6px rgba(160, 220, 255, 0.45),
-			    0 0 14px rgba(120, 180, 255, 0.22);
-			  opacity: 1;
-			}
-			.ch.dim {
-			  color: #5e6670;
-			  text-shadow: none;
-			  opacity: 0.55;
-			}
-			#container{
-			  position: relative;
-			}
+  background-image: url("../gif/static.gif");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
 
-			/* Overlay-Layer */
-			/* FULLSCREEN VHS/SCANLINES OVERLAY */
-			.vhs-overlay{
-			  position: fixed;
-			  top: 0; left: 0;
-			  width: 100vw;
-			  height: 100vh;
-			  pointer-events: none;
-			  z-index: 9998;          /* unter glitchOverlay (9999), aber über content */
-			  border-radius: 0;
-			  overflow: hidden;
+  opacity: 0.1;   /* "target" opacity while enabled */
+  mix-blend-mode: screen;
 
-			  background:
-			    repeating-linear-gradient(
-			      to bottom,
-			      rgba(255,255,255,0.035) 0px,
-			      rgba(255,255,255,0.035) 1px,
-			      rgba(0,0,0,0.00) 2px,
-			      rgba(0,0,0,0.00) 4px
-			    ),
-			    radial-gradient(
-			      ellipse at center,
-			      rgba(0,0,0,0.00) 40%,
-			      rgba(0,0,0,0.22) 85%,
-			      rgba(0,0,0,0.40) 100%
-			    );
+  display: none;  /* default OFF */
+}
+body.static-on #staticOverlay{ display:block; }
 
-			  mix-blend-mode: screen;
-			  opacity: 0;
-			  visibility: hidden;
-			  filter: saturate(1.05) contrast(1.05);
-			  animation: vhsFlicker 2.1s infinite steps(1,end);
-			  animation-play-state: paused;
-			}
+/* =========================
+   Container / Text
+   ========================= */
 
-			/* ON */
-			body.vhs-on .vhs-overlay{
-			  opacity: 1;
-			  visibility: visible;
-			  animation-play-state: running;
-			}
-			body.vhs-on .vhs-overlay::before,
-			body.vhs-on .vhs-overlay::after{
-			  animation-play-state: running;
-			}
+#container{
+  width: 1520px;
+  margin-top: -25px;
+  position: relative;
+}
 
-			/* VHS default OFF */
-			.vhs-overlay{
-			  opacity: 0;                  /* vorher: 1.00 */
-			  visibility: hidden;
-			  animation-play-state: paused; /* flicker pausiert */
-			}
+pre{ margin: 0; white-space: pre-wrap; }
 
-			/* auch die pseudo-layer pausieren */
-			.vhs-overlay::before,
-			.vhs-overlay::after{
-			  animation-play-state: paused;
-			}
+/* Pre blocks (line-height can be animated via JS) */
+#left, #right{
+  display: block;
+  line-height: 0.575;       /* base value */
+  letter-spacing: 0.02em;
+}
+#left{ float: left; }
+#right{ float: right; }
 
-			/* VHS ON per class am container */
-			#container.vhs-on .vhs-overlay{
-			  opacity: 1;
-			  visibility: visible;
-			  animation-play-state: running;
-			}
-			#container.vhs-on .vhs-overlay::before,
-			#container.vhs-on .vhs-overlay::after{
-			  animation-play-state: running;
-			}
+/* Per-character spans */
+.ch{
+  display: inline-block;
+  color: #8f98a1; /* default "gray" profile base */
+  transition: color 1700ms linear, text-shadow 700ms linear, opacity 700ms linear;
+  opacity: 0.95;
+}
 
-			/* “Tracking noise” (wandernde helle Banding-Zone) */
-			.vhs-overlay::before{
-			  content:"";
-			  position:absolute;
-			  inset:-20%;
-			  background:
-			    linear-gradient(
-			      to bottom,
-			      rgba(255,255,255,0.00) 0%,
-			      rgba(255,255,255,0.04) 48%,
-			      rgba(255,255,255,0.12) 50%,
-			      rgba(255,255,255,0.04) 52%,
-			      rgba(255,255,255,0.00) 100%
-			    );
-			  opacity: 0.55;
-			  transform: translateY(-30%);
-			  animation: vhsTracking 7.5s infinite linear;
-			  mix-blend-mode: screen;
-			}
+/* "Hot" highlight */
+.ch.hot{
+  color: #eaf6ff;
+  text-shadow:
+    0 0 6px rgba(160, 220, 255, 0.45),
+    0 0 14px rgba(120, 180, 255, 0.22);
+  opacity: 1;
+}
 
-			/* feines “Rauschen” + minimaler Farbversatz (VHS-Feeling) */
-			.vhs-overlay::after{
-			  content:"";
-			  position:absolute;
-			  inset:0;
-			  background:
-			    /* pseudo noise über gradients */
-			    repeating-linear-gradient(
-			      to right,
-			      rgba(255,255,255,0.02) 0px,
-			      rgba(255,255,255,0.00) 2px,
-			      rgba(0,0,0,0.02) 3px
-			    );
-			  opacity: 0.25;
-			  mix-blend-mode: soft-light;
-			  animation: vhsJitter 1.3s infinite steps(2, end);
-			  filter: hue-rotate(2deg);
-			}
+/* "Dim" shadow */
+.ch.dim{
+  color: #5e6670;
+  text-shadow: none;
+  opacity: 0.55;
+}
 
-			/* Optional: sehr dezente “Chromatic Aberration” auf deinem Text */
-			#container.vhs-ca{
-			  filter:
-				drop-shadow( 2px 0 rgba(255,0,80,0.22))
-				drop-shadow(-2px 0 rgba(0,160,255,0.22));
-			}
+/* Disable hot/dim visuals when character FX is OFF */
+body.chfx-off .ch.hot,
+body.chfx-off .ch.dim{
+  color: inherit !important;
+  text-shadow: none !important;
+  opacity: 0.95 !important;
+}
 
-			/* Animations */
-			@keyframes vhsFlicker{
-			  0%   { opacity: 0.78; }
-			  6%   { opacity: 0.90; }
-			  8%   { opacity: 0.82; }
-			  12%  { opacity: 0.88; }
-			  50%  { opacity: 0.80; }
-			  60%  { opacity: 0.92; }
-			  100% { opacity: 0.85; }
-			}
+/* =========================
+   Scanlines + moving row (VHS overlay)
+   Toggle via: body.scan-on
+   ========================= */
 
-			@keyframes vhsTracking{
-			  0%   { transform: translateY(-45%); }
-			  100% { transform: translateY(45%); }
-			}
+.vhs-overlay{
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9998;   /* above content, below glitch */
+  border-radius: 0;
+  overflow: hidden;
 
-			@keyframes vhsJitter{
-			  0%   { transform: translateX(0px); }
-			  50%  { transform: translateX(0.6px); }
-			  100% { transform: translateX(-0.6px); }
-			}
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.035) 0px,
+      rgba(255,255,255,0.035) 1px,
+      rgba(0,0,0,0.00) 2px,
+      rgba(0,0,0,0.00) 4px
+    ),
+    radial-gradient(
+      ellipse at center,
+      rgba(0,0,0,0.00) 40%,
+      rgba(0,0,0,0.22) 85%,
+      rgba(0,0,0,0.40) 100%
+    );
 
-			/* === FLOAT/MOVE FX (default OFF) =============================== */
-			#left, #right{
-			  will-change: transform;
-			  transform: translate3d(0,0,0);
-			}
+  mix-blend-mode: screen;
+  opacity: 0;
+  visibility: hidden;
 
-			/* aktiv, wenn #container die Klasse .float-on hat */
-			#container.float-on #left{
-			  animation: floatLeft 5.6s ease-in-out infinite;
-			}
-			#container.float-on #right{
-			  animation: floatRight 6.2s ease-in-out infinite;
-			}
+  filter: saturate(1.05) contrast(1.05);
+  animation: vhsFlicker 2.1s infinite steps(1,end);
+  animation-play-state: paused;
+}
 
-			/* links etwas nach links, rechts etwas nach rechts,
-			   und beide gegenläufig leicht hoch/runter */
-			@keyframes floatLeft{
-			  0%   { transform: translate3d(-6px,  2px, 0); }
-			  25%  { transform: translate3d(-10px,-3px, 0); }
-			  50%  { transform: translate3d(-7px,  3px, 0); }
-			  75%  { transform: translate3d(-11px,-2px, 0); }
-			  100% { transform: translate3d(-6px,  2px, 0); }
-			}
-			@keyframes floatRight{
-			  0%   { transform: translate3d( 6px, -2px, 0); }
-			  25%  { transform: translate3d(10px,  3px, 0); }
-			  50%  { transform: translate3d( 7px, -3px, 0); }
-			  75%  { transform: translate3d(11px,  2px, 0); }
-			  100% { transform: translate3d( 6px, -2px, 0); }
-			}
+/* Default: keep pseudo layers paused */
+.vhs-overlay::before,
+.vhs-overlay::after{
+  animation-play-state: paused;
+}
 
-			/* optional: wenn OFF, sicher keine Animation */
-			#container:not(.float-on) #left,
-			#container:not(.float-on) #right{
-			  animation: none !important;
-			}
+/* ON */
+body.scan-on .vhs-overlay{
+  opacity: 1;
+  visibility: visible;
+  animation-play-state: running;
+}
+body.scan-on .vhs-overlay::before,
+body.scan-on .vhs-overlay::after{
+  animation-play-state: running;
+}
+
+/* Moving "tracking band" */
+.vhs-overlay::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.00) 0%,
+      rgba(255,255,255,0.04) 48%,
+      rgba(255,255,255,0.12) 50%,
+      rgba(255,255,255,0.04) 52%,
+      rgba(255,255,255,0.00) 100%
+    );
+  opacity: 0.55;
+  transform: translateY(-30%);
+  animation: vhsTracking 7.5s infinite linear;
+  mix-blend-mode: screen;
+}
+
+/* Fine noise + tiny jitter */
+.vhs-overlay::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(
+      to right,
+      rgba(255,255,255,0.02) 0px,
+      rgba(255,255,255,0.00) 2px,
+      rgba(0,0,0,0.02) 3px
+    );
+  opacity: 0.25;
+  mix-blend-mode: soft-light;
+  animation: vhsJitter 1.3s infinite steps(2, end);
+  filter: hue-rotate(2deg);
+}
+
+/* Optional chromatic aberration (can be toggled by JS if you want) */
+#container.vhs-ca{
+  filter:
+    drop-shadow( 2px 0 rgba(255,0,80,0.22))
+    drop-shadow(-2px 0 rgba(0,160,255,0.22));
+}
+
+/* Animations */
+@keyframes vhsFlicker{
+  0%   { opacity: 0.78; }
+  6%   { opacity: 0.90; }
+  8%   { opacity: 0.82; }
+  12%  { opacity: 0.88; }
+  50%  { opacity: 0.80; }
+  60%  { opacity: 0.92; }
+  100% { opacity: 0.85; }
+}
+@keyframes vhsTracking{
+  0%   { transform: translateY(-45%); }
+  100% { transform: translateY(45%); }
+}
+@keyframes vhsJitter{
+  0%   { transform: translateX(0px); }
+  50%  { transform: translateX(0.6px); }
+  100% { transform: translateX(-0.6px); }
+}
+
+/* =========================
+   Float/move (optional, keep as you had it)
+   Toggle via: #container.float-on
+   ========================= */
+
+#left, #right{
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+
+#container.float-on #left{
+  animation: floatLeft 5.6s ease-in-out infinite;
+}
+#container.float-on #right{
+  animation: floatRight 6.2s ease-in-out infinite;
+}
+
+@keyframes floatLeft{
+  0%   { transform: translate3d(-6px,  2px, 0); }
+  25%  { transform: translate3d(-10px,-3px, 0); }
+  50%  { transform: translate3d(-7px,  3px, 0); }
+  75%  { transform: translate3d(-11px,-2px, 0); }
+  100% { transform: translate3d(-6px,  2px, 0); }
+}
+@keyframes floatRight{
+  0%   { transform: translate3d( 6px, -2px, 0); }
+  25%  { transform: translate3d(10px,  3px, 0); }
+  50%  { transform: translate3d( 7px, -3px, 0); }
+  75%  { transform: translate3d(11px,  2px, 0); }
+  100% { transform: translate3d( 6px, -2px, 0); }
+}
+
+#container:not(.float-on) #left,
+#container:not(.float-on) #right{
+  animation: none !important;
+}
+
+/* =========================
+   Text color profiles (toggle via classes on <body>)
+   Use +/- in JS to cycle:
+   - profile-gray, profile-red, profile-green, profile-blue
+   ========================= */
+
+body.profile-gray{
+  --text-base: #8f98a1;
+  --text-hot:  #eaf6ff;
+  --text-dim:  #5e6670;
+}
+
+body.profile-red{
+  --text-base: #ff6b6b;
+  --text-hot:  #ffd1d1;
+  --text-dim:  #7a2f2f;
+}
+
+body.profile-green{
+  --text-base: #4cff8d;
+  --text-hot:  #d6ffe5;
+  --text-dim:  #1f6b3a;
+}
+
+body.profile-blue{
+  --text-base: #59b6ff;
+  --text-hot:  #d9f0ff;
+  --text-dim:  #2a557a;
+}
+
+/* Apply variables */
+body.profile-gray .ch,
+body.profile-red  .ch,
+body.profile-green .ch,
+body.profile-blue .ch{
+  color: var(--text-base);
+}
+
+body.profile-gray .ch.hot,
+body.profile-red  .ch.hot,
+body.profile-green .ch.hot,
+body.profile-blue .ch.hot{
+  color: var(--text-hot);
+  /* Keep glow as-is (blue-ish); JS can override if you later want per-profile glow */
+}
+
+body.profile-gray .ch.dim,
+body.profile-red  .ch.dim,
+body.profile-green .ch.dim,
+body.profile-blue .ch.dim{
+  color: var(--text-dim);
+}
+
+/* Fallback if no profile class is set */
+body:not(.profile-gray):not(.profile-red):not(.profile-green):not(.profile-blue) .ch{
+  color: #8f98a1;
+}
