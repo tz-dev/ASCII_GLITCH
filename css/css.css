@@ -23,7 +23,7 @@ body{
   margin: 0;
   background: #000;
   color: #999;
-  font-size: 0.85em;
+  font-size: 0.65em;
   overflow: hidden;
 
   display: flex;
@@ -87,7 +87,13 @@ body.static-on #staticOverlay{ display:block; }
   position: relative;
 }
 
-pre{ margin: 0; white-space: pre-wrap; }
+/* Canvas fills container width, height is computed by JS */
+#term{
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated; /* optional, kann raus */
+}
 
 /* Pre blocks (line-height can be animated via JS) */
 #left, #right{
@@ -102,8 +108,8 @@ pre{ margin: 0; white-space: pre-wrap; }
 .ch{
   display: inline-block;
   color: #8f98a1; /* default "gray" profile base */
-  transition: color 1700ms linear, text-shadow 700ms linear, opacity 700ms linear;
   opacity: 0.95;
+  transition: color 1000ms linear, text-shadow 700ms linear, opacity 700ms linear;
 }
 
 /* "Hot" highlight */
