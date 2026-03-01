@@ -20,7 +20,7 @@
    ========================= */
 
 // ---- Color profiles ----
-const PROFILES = ["gray", "red ", "green", "blue"];
+const PROFILES = ["gray", "red", "green", "blue"];
 
 // ---- Initial ON/OFF state ----
 const DEFAULT_STATE = {
