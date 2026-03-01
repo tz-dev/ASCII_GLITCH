@@ -14,16 +14,11 @@ Whatever you place inside the `<pre>` blocks becomes a **received signal** rende
 
 # Usage
 
-Open **index.html** and replace the ASCII inside:
+Open **js.js** and replace the ASCII inside:
 
 ```html
-<pre id="left">
-YOUR ASCII ART
-</pre>
-
-<pre id="right">
-MORE ASCII ART
-</pre>
+let leftText   = `YOUR ASCII ART`
+let rightText  = `YOUR ASCII ART`
 ```
 
 The renderer converts the content into a **canvas-based ASCII terminal** and applies all signal effects in real time.
