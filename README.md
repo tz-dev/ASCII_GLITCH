@@ -68,15 +68,15 @@ gray → red → green → blue
 
 # Effects Overview
 
-### Glitch Overlay
+### Glitch Overlay (FX1)
 
 Random glitch artifacts simulating corrupted video frames.
 
-### Static Noise
+### Static Noise (FX2)
 
 Low-opacity analog noise with occasional flicker drops.
 
-### Scanline Sync Loss
+### Scanline Sync Loss (FX3)
 
 Simulates unstable signal reception:
 
@@ -108,130 +108,6 @@ The entire signal drifts in a subtle orbital movement with slow random drift.
 All tunable parameters are located at the **top of the main script** inside the `CONFIG` section.
 
 You can modify behavior without touching the effect implementations.
-
----
-
-## Initial State
-
-`DEFAULT_STATE`
-
-Controls which effects start enabled.
-
-Example:
-
-```
-master
-glitch
-static
-scan
-fx4
-fx5
-fx6
-fps
-```
-
----
-
-## Color Profiles
-
-`PROFILES`
-
-Defines available terminal color palettes.
-
-Default:
-
-```
-gray
-red
-green
-blue
-```
-
----
-
-## Static Noise
-
-`STATIC_TUNABLES`
-
-Controls noise opacity and flicker behavior.
-
-Parameters include:
-
-```
-opacity
-nextTickMin / nextTickMax
-flickerChance
-offForMin / offForMax
-```
-
----
-
-## Scanline Sync Loss
-
-`SCAN_TUNABLES`
-
-Controls signal instability.
-
-Includes:
-
-```
-shift frequency
-shift distance
-shift duration
-freeze probability
-number of affected lines
-```
-
----
-
-## Line Distortion
-
-`FX4` tunables control:
-
-```
-band size
-distortion amplitude
-relaxation speed
-event frequency
-```
-
----
-
-## Character Activity
-
-`FX5_TUNABLES`
-
-Controls hot/dim behavior.
-
-Parameters include:
-
-```
-spawn rate
-segment length
-lifetime
-fade in/out
-hot probability
-space skip probability
-```
-
----
-
-## Signal Motion
-
-`FX6_TUNABLES`
-
-Controls orbital movement.
-
-Parameters include:
-
-```
-radius range
-speed range
-drift intensity
-drift smoothing
-micro jitter
-vertical scaling
-```
 
 ---
 
