@@ -123,11 +123,11 @@ You can modify behavior without touching the effect implementations.
 
 Some good sources for ASCII art:
 
-[https://www.asciiart.eu/](https://www.asciiart.eu/)
-[https://www.textart.sh/](https://www.textart.sh/)
-[https://emojicombos.com/ascii-art](https://emojicombos.com/ascii-art)
-[https://patorjk.com/software/taag/](https://patorjk.com/software/taag/)
-[https://www.asciiartarchive.com/](https://www.asciiartarchive.com/)
+[https://www.asciiart.eu/](https://www.asciiart.eu/)  
+[https://www.textart.sh/](https://www.textart.sh/)  
+[https://emojicombos.com/ascii-art](https://emojicombos.com/ascii-art)  
+[https://patorjk.com/software/taag/](https://patorjk.com/software/taag/)  
+[https://www.asciiartarchive.com/](https://www.asciiartarchive.com/)  
 
 Tip: **use spaces instead of tabs**.
 
