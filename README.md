@@ -1,16 +1,18 @@
 # ASCII_GLITCH
 
-A real-time ASCII terminal display that simulates unstable signal reception — glitch bursts, VHS noise, sync loss, flicker and frozen frames.
+A real-time ASCII terminal display that simulates unstable signal reception — glitch bursts, VHS noise, sync loss, flicker, frozen frames and drifting signal blocks.
 
-Whatever you place inside the `<pre>` blocks becomes a “received signal”.
+Whatever you place inside the `<pre>` blocks becomes a **received signal** rendered through a simulated unstable terminal.
 
 ---
+
+**Live demo**
 
 [ASCII_GLITCH – Web Demo](https://tz-dev.github.io/ASCII_GLITCH/index.html)
 
 ---
 
-## Usage
+# Usage
 
 Open **index.html** and replace the ASCII inside:
 
@@ -22,105 +24,241 @@ YOUR ASCII ART
 <pre id="right">
 MORE ASCII ART
 </pre>
-````
+```
 
-The animation automatically applies to every character.
+The renderer converts the content into a **canvas-based ASCII terminal** and applies all signal effects in real time.
 
-Best results with monospaced ASCII.
-
----
-
-## Controls
-
-### Master — Toggle general FX on/off
-
-* ENTER
-* SPACE
-* A
-* LEFT CLICK
-
-### Individual Effects
-
-| Key   | Effect                                           |
-| ----- | ------------------------------------------------ |
-| 1     | Glitch overlay on/off                            |
-| 2     | Static noise on/off                              |
-| 3     | Scanlines + sync loss movement on/off            |
-| 4     | Character activity (bright/dim waves) on/off     |
-| 5     | Pre block floating movement on/off               |
-| + / - | Cycle color profiles (gray → red → green → blue) |
+Best results with **monospaced ASCII art**.
 
 ---
 
-## Configuration
+# Controls
 
-All tunable parameters (frequencies, ranges, intensities) are grouped at the **top of the main script** inside a dedicated **`CONFIG`** section.
+## Master — Toggle everything
 
-This lets you tweak the “signal behavior” without digging through effect logic.
-
-### What you can tune
-
-**Initial toggles**
-
-* `DEFAULT_STATE` controls which effects start enabled (master/glitch/static/scan/character FX/float + default color profile).
-
-**Color profiles**
-
-* `PROFILES` defines available theme profiles (default: `gray`, `red`, `green`, `blue`).
-* Use `+ / -` to cycle them during runtime.
-
-**Character waves (hot/dim)**
-
-* `WAVE_TUNABLES` defines per-side behavior (left/right, hot/dim):
-
-  * Line band size (`bandMinLines`, `bandMaxLines`)
-  * Activity density per line (`perLineMin`, `perLineMax`)
-  * How long chars stay hot/dim (`holdMin`, `holdMax`)
-  * Horizontal spread around a random center (`radiusMin`, `radiusMax`)
-* `WAVE_SCHEDULE` controls how often new waves are emitted (`intervalMin`, `intervalMax`).
-
-**Static flicker**
-
-* `STATIC_TUNABLES` controls static opacity and flicker timing:
-
-  * Base opacity (`opacity`)
-  * Tick interval (`nextTickMin/Max`)
-  * Flicker probability (`flickerChance`)
-  * Flicker off duration (`offForMin/Max`)
-
-**Scanline / sync-loss**
-
-* `SCAN_TUNABLES` controls the “sync loss” line shift + rare freeze frames:
-
-  * Tick interval + initial delay
-  * Freeze probability (`freezeChance`)
-  * Shift probability (`shiftChance`)
-  * How many lines shift, duration, and px range
-
-> Tip: Start by adjusting *intervals* and *probabilities* first (feel), then shift/hold/radius (look).
+| Key        |
+| ---------- |
+| ENTER      |
+| SPACE      |
+| A          |
+| LEFT CLICK |
 
 ---
 
-## ASCII Sources
+## Individual Effects
 
-* [https://www.asciiart.eu/](https://www.asciiart.eu/)
-* [https://www.textart.sh/](https://www.textart.sh/)
-* [https://emojicombos.com/ascii-art](https://emojicombos.com/ascii-art)
-* [https://patorjk.com/software/taag/](https://patorjk.com/software/taag/)
-* [https://www.asciiartarchive.com/](https://www.asciiartarchive.com/)
+| Key   | Effect                                |
+| ----- | ------------------------------------- |
+| 0     | FPS counter on/off                    |
+| 1     | Glitch overlay on/off                 |
+| 2     | Static noise on/off                   |
+| 3     | Scanlines + sync loss + freeze frames |
+| 4     | Line distortion waves                 |
+| 5     | Character hot/dim activity            |
+| 6     | Signal drift / orbit motion           |
+| + / - | Cycle color profiles                  |
 
-Tip: use spaces instead of tabs.
+Available profiles:
+
+```
+gray → red → green → blue
+```
 
 ---
 
-## Notes
+# Effects Overview
 
-* Large ASCII may impact performance
-* Intended for fullscreen viewing
-* Dark background recommended
+### Glitch Overlay
+
+Random glitch artifacts simulating corrupted video frames.
+
+### Static Noise
+
+Low-opacity analog noise with occasional flicker drops.
+
+### Scanline Sync Loss
+
+Simulates unstable signal reception:
+
+* horizontal row shifts
+* occasional signal freeze
+* irregular sync timing
+
+### Line Distortion (FX4)
+
+Random horizontal bands stretch vertically and relax back to normal.
+
+### Character Activity (FX5)
+
+Random character segments temporarily change intensity:
+
+* **hot** → brighter signal spikes
+* **dim** → darker signal dips
+
+All transitions are smooth and animated.
+
+### Signal Motion (FX6)
+
+The entire signal drifts in a subtle orbital movement with slow random drift.
 
 ---
 
-## License
+# Configuration
 
-Free for use by everyone (personal & commercial).
+All tunable parameters are located at the **top of the main script** inside the `CONFIG` section.
+
+You can modify behavior without touching the effect implementations.
+
+---
+
+## Initial State
+
+`DEFAULT_STATE`
+
+Controls which effects start enabled.
+
+Example:
+
+```
+master
+glitch
+static
+scan
+fx4
+fx5
+fx6
+fps
+```
+
+---
+
+## Color Profiles
+
+`PROFILES`
+
+Defines available terminal color palettes.
+
+Default:
+
+```
+gray
+red
+green
+blue
+```
+
+---
+
+## Static Noise
+
+`STATIC_TUNABLES`
+
+Controls noise opacity and flicker behavior.
+
+Parameters include:
+
+```
+opacity
+nextTickMin / nextTickMax
+flickerChance
+offForMin / offForMax
+```
+
+---
+
+## Scanline Sync Loss
+
+`SCAN_TUNABLES`
+
+Controls signal instability.
+
+Includes:
+
+```
+shift frequency
+shift distance
+shift duration
+freeze probability
+number of affected lines
+```
+
+---
+
+## Line Distortion
+
+`FX4` tunables control:
+
+```
+band size
+distortion amplitude
+relaxation speed
+event frequency
+```
+
+---
+
+## Character Activity
+
+`FX5_TUNABLES`
+
+Controls hot/dim behavior.
+
+Parameters include:
+
+```
+spawn rate
+segment length
+lifetime
+fade in/out
+hot probability
+space skip probability
+```
+
+---
+
+## Signal Motion
+
+`FX6_TUNABLES`
+
+Controls orbital movement.
+
+Parameters include:
+
+```
+radius range
+speed range
+drift intensity
+drift smoothing
+micro jitter
+vertical scaling
+```
+
+---
+
+# Performance Notes
+
+* The renderer uses **canvas + row caching** for speed.
+* Very large ASCII blocks may still reduce frame rate.
+* With all effects enabled large signals typically run around **~50–60 FPS** on modern hardware.
+
+---
+
+# ASCII Sources
+
+Some good sources for ASCII art:
+
+[https://www.asciiart.eu/](https://www.asciiart.eu/)
+[https://www.textart.sh/](https://www.textart.sh/)
+[https://emojicombos.com/ascii-art](https://emojicombos.com/ascii-art)
+[https://patorjk.com/software/taag/](https://patorjk.com/software/taag/)
+[https://www.asciiartarchive.com/](https://www.asciiartarchive.com/)
+
+Tip: **use spaces instead of tabs**.
+
+---
+
+# License
+
+Free for use by everyone.
+
+Personal and commercial use allowed.
